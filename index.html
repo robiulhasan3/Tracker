@@ -118,7 +118,7 @@
                                 <th class="p-3">বর্তমান অবস্থান</th>
                                 <th class="p-3">স্ট্যাটাস</th>
                                 <th class="p-3">সর্বশেষ আপডেট</th>
-                                <th class="p-3 text-center">অ্যাকশন / ফরোয়ার্ড</th>
+                                <th class="p-3 text-center">অ্যাকশন / অ্যাকশন নিয়ন্ত্রণ</th>
                             </tr>
                         </thead>
                         <tbody id="appTableBody" class="divide-y divide-gray-200"></tbody>
@@ -128,13 +128,15 @@
 
         </div>
 
-        <!-- FORWARD MODAL -->
+        <!-- FORWARD / ACTION MODAL -->
         <div id="forwardModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
             <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
-                <h3 class="text-lg font-bold text-gray-800 border-b pb-2">আবেদন ফরোয়ার্ড করুন</h3>
+                <h3 id="modalTitle" class="text-lg font-bold text-gray-800 border-b pb-2">আবেদন ফরোয়ার্ড করুন</h3>
                 <input type="hidden" id="modalAppId">
+                <input type="hidden" id="isRollbackMode" value="false">
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাতে চান (Forward To) *</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাতে চান (Forward / Send Back To) *</label>
                     <select id="forwardTarget" class="w-full px-3 py-2 border rounded text-sm">
                         <optgroup label="অফিস সহকারী ও সংশ্লিষ্ট কর্মকর্তা">
                             <option value="oa_arman">আরমান (অফিস সহকারী)</option>
@@ -163,6 +165,7 @@
                     <label class="block text-xs font-semibold text-gray-600 mb-1">স্ট্যাটাস পরিবর্তন</label>
                     <select id="forwardStatus" class="w-full px-3 py-2 border rounded text-sm">
                         <option value="প্রসেসিংয়ে আছে">প্রসেসিংয়ে আছে</option>
+                        <option value="পুনর্বিবেচনার জন্য প্রেরিত">পুনর্বিবেচনার জন্য প্রেরিত (স্টেপ ব্যাক)</option>
                         <option value="ইউনিয়নে তদন্তাধীন">ইউনিয়নে তদন্তাধীন</option>
                         <option value="প্রতিবেদন প্রাপ্ত">প্রতিবেদন প্রাপ্ত</option>
                         <option value="নিষ্পত্তি">নিষ্পত্তি</option>
@@ -170,12 +173,12 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / নির্দেশনা / প্রতিবেদন নোট</label>
-                    <textarea id="forwardNote" rows="3" placeholder="যেমন: সরেজমিনে তদন্তপূর্বক প্রতিবেদন দিন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / পুনর্বিবেচনার নির্দেশনা / নোট</label>
+                    <textarea id="forwardNote" rows="3" placeholder="আদেশ বা ব্যাক করার কারণ লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm">বাতিল</button>
-                    <button onclick="submitForward()" class="px-4 py-2 bg-emerald-700 text-white rounded text-sm">প্রেরণ করুন</button>
+                    <button onclick="submitForward()" id="submitActionBtn" class="px-4 py-2 bg-emerald-700 text-white rounded text-sm">প্রেরণ করুন</button>
                 </div>
             </div>
         </div>
@@ -199,9 +202,6 @@
 
     <!-- LOGIC -->
     <script>
-        // =============================================================
-        // আপনার দেয়া আসল ফায়ারবেজ কনফিগারেশন যুক্ত করা হয়েছে
-        // =============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAk3g6BExbKirRokms9ZB3Js7TgCUSJbOI",
             authDomain: "tracker-21b81.firebaseapp.com",
@@ -215,9 +215,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // =============================================================
-        // ইউজার ও অ্যাসাইনি তথ্য (CREDENTIALS)
-        // =============================================================
         const USERS = {
             "operator":     { pass: "123456", name: "ডাটা এন্ট্রি অপারেটর", role: "operator", id: "operator" },
             "acland":       { pass: "123456", name: "সহকারী কমিশনার (ভূমি)", role: "ac_land", id: "ac_land" },
@@ -263,7 +260,6 @@
         let currentUser = null;
         let allApplications = [];
 
-        // Check Local Storage Session
         window.onload = function() {
             const savedUser = localStorage.getItem('tracker_user');
             if (savedUser) {
@@ -272,7 +268,6 @@
             }
         };
 
-        // Login Logic
         function login(e) {
             e.preventDefault();
             const idInput = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -312,7 +307,6 @@
             location.reload();
         }
 
-        // New Application
         function createApplication(e) {
             e.preventDefault();
             const appNo = document.getElementById('appNo').value;
@@ -340,7 +334,6 @@
             }).catch(err => alert('এরর: ' + err.message));
         }
 
-        // Firestore Listener
         function listenApplications() {
             db.collection('applications').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 allApplications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -355,7 +348,8 @@
             let count = 0;
             data.forEach(app => {
                 const isMyFile = app.currentAssignee === currentUser.id;
-                const canView = (currentUser.role === 'ac_land') || (currentUser.role === 'operator') || isMyFile;
+                const isAcLand = currentUser.role === 'ac_land';
+                const canView = isAcLand || (currentUser.role === 'operator') || isMyFile;
 
                 if (!canView) return;
                 count++;
@@ -364,7 +358,12 @@
                 tr.className = isMyFile ? "bg-amber-50 font-medium" : "hover:bg-gray-50";
 
                 const historyBtn = `<button onclick="showHistory('${app.id}')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">গতিপথ</button>`;
-                const forwardBtn = isMyFile ? `<button onclick="openForwardModal('${app.id}')" class="text-xs bg-emerald-700 text-white px-2 py-1 rounded hover:bg-emerald-800 ml-1">ফরোয়ার্ড</button>` : '';
+                
+                // Normal Forward button for file holder
+                const forwardBtn = isMyFile ? `<button onclick="openForwardModal('${app.id}', false)" class="text-xs bg-emerald-700 text-white px-2 py-1 rounded hover:bg-emerald-800 ml-1">ফরোয়ার্ড</button>` : '';
+                
+                // AC Land Specific Step Back Button (Even if file is not currently with AC Land)
+                const stepBackBtn = isAcLand ? `<button onclick="openForwardModal('${app.id}', true)" class="text-xs bg-amber-600 text-white px-2 py-1 rounded hover:bg-amber-700 ml-1">↩️ ব্যাক করুন</button>` : '';
 
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-gray-800">${app.appNo}</td>
@@ -373,7 +372,7 @@
                     <td class="p-3"><span class="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded font-semibold">${ASSIGNEE_NAMES[app.currentAssignee] || app.currentAssignee}</span></td>
                     <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">${app.status}</span></td>
                     <td class="p-3 text-xs">${app.history && app.history.length > 0 ? app.history[app.history.length - 1].date : '-'}</td>
-                    <td class="p-3 text-center">${historyBtn} ${forwardBtn}</td>
+                    <td class="p-3 text-center">${historyBtn} ${forwardBtn} ${stepBackBtn}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -391,8 +390,26 @@
             renderTable(filtered);
         }
 
-        function openForwardModal(appId) {
+        function openForwardModal(appId, isRollback = false) {
             document.getElementById('modalAppId').value = appId;
+            document.getElementById('isRollbackMode').value = isRollback;
+
+            const modalTitle = document.getElementById('modalTitle');
+            const submitBtn = document.getElementById('submitActionBtn');
+            const forwardStatus = document.getElementById('forwardStatus');
+
+            if (isRollback) {
+                modalTitle.innerText = "আবেদন পূর্বের ধাপে ব্যাক করুন (AC Land Power)";
+                submitBtn.innerText = "ব্যাক করুন";
+                submitBtn.className = "px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm";
+                forwardStatus.value = "পুনর্বিবেচনার জন্য প্রেরিত";
+            } else {
+                modalTitle.innerText = "আবেদন ফরোয়ার্ড করুন";
+                submitBtn.innerText = "প্রেরণ করুন";
+                submitBtn.className = "px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-sm";
+                forwardStatus.value = "প্রসেসিংয়ে আছে";
+            }
+
             document.getElementById('forwardModal').classList.remove('hidden');
         }
 
@@ -402,6 +419,7 @@
 
         function submitForward() {
             const appId = document.getElementById('modalAppId').value;
+            const isRollback = document.getElementById('isRollbackMode').value === "true";
             const target = document.getElementById('forwardTarget').value;
             const status = document.getElementById('forwardStatus').value;
             const note = document.getElementById('forwardNote').value;
@@ -409,10 +427,11 @@
             const app = allApplications.find(a => a.id === appId);
             if (!app) return;
 
+            const actionLabel = isRollback ? "↩️ [স্টেপ ব্যাক করা হয়েছে]" : "";
             const historyEntry = {
-                from: currentUser.name,
+                from: `${currentUser.name} ${actionLabel}`,
                 to: ASSIGNEE_NAMES[target],
-                note: note || "কোনো নোট নেই",
+                note: note || (isRollback ? "সহকারী কমিশনার (ভূমি) কর্তৃক পুনঃনিরীক্ষণের জন্য ব্যাক করা হয়েছে।" : "কোনো নোট নেই"),
                 date: new Date().toLocaleString('bn-BD')
             };
 
@@ -421,7 +440,7 @@
                 status: status,
                 history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
             }).then(() => {
-                alert('আবেদনটি ফরোয়ার্ড করা হয়েছে!');
+                alert(isRollback ? 'আবেদনটি সফলভাবে পূর্বের ধাপে ব্যাক করা হয়েছে!' : 'আবেদনটি ফরোয়ার্ড করা হয়েছে!');
                 closeModal();
                 document.getElementById('forwardNote').value = '';
             });
