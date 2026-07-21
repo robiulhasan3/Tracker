@@ -63,46 +63,66 @@
             <!-- OPERATOR: NEW APPLICATION FORM -->
             <div id="operatorFormCard" class="bg-white rounded-lg shadow-md p-6 hidden">
                 <h2 class="text-lg font-bold text-custom-green mb-4 pb-2 border-b">নতুন বিবিধ আবেদন যোগ করুন</h2>
-                <form id="newAppForm" onsubmit="createApplication(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদন / স্মারক নম্বর *</label>
-                        <input type="text" id="appNo" required placeholder="যেমন: ৩.৪৫/২০২৬" class="w-full px-3 py-2 border rounded text-sm">
+                <form id="newAppForm" onsubmit="createApplication(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদন / স্মারক নম্বর *</label>
+                            <input type="text" id="appNo" required placeholder="যেমন: ৩.৪৫/২০২৬" class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদনকারীর নাম *</label>
+                            <input type="text" id="applicant" required placeholder="নাম" class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">মোবাইল নম্বর *</label>
+                            <input type="text" id="mobile" required placeholder="017XXXXXXXX" class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয়ের ক্যাটাগরি *</label>
+                            <select id="category" required class="w-full px-3 py-2 border rounded text-sm bg-white">
+                                <option value="">ক্যাটাগরি নির্বাচন করুন...</option>
+                                <option value="অভিযোগ">অভিযোগ</option>
+                                <option value="ডিসি অফিসের চিঠি">ডিসি অফিসের চিঠি</option>
+                                <option value="এস এফ">এস এফ</option>
+                                <option value="পিটিশন মামলা">পিটিশন মামলা</option>
+                                <option value="সিআর মামলা">সিআর মামলা</option>
+                                <option value="আবেদন">আবেদন</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয় (বিস্তারিত) *</label>
+                            <input type="text" id="subject" required placeholder="যেমন: খাস জমি সংক্রান্ত / সীমানা বিরোধ" class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদনকারীর নাম *</label>
-                        <input type="text" id="applicant" required placeholder="নাম" class="w-full px-3 py-2 border rounded text-sm">
+
+                    <!-- MULTI-SELECT ASSIGNEE BOX -->
+                    <div class="border p-3 rounded-md bg-gray-50">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-semibold text-gray-700">যার/যাদের কাছে পাঠাবেন (এক বা একাধিক সিলেক্ট করতে পারবেন) *</label>
+                            <label class="text-xs text-emerald-700 font-bold cursor-pointer">
+                                <input type="checkbox" id="selectAllUlao" onchange="toggleSelectAllUlao(this)"> সকল ইউনিয়ন ভূমি অফিস একসাথে সিলেক্ট করুন
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs" id="assigneeCheckboxGroup">
+                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_arman"> <span>আরমান (অফিস সহকারী)</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_saddam"> <span>সাদ্দাম (অফিস সহকারী)</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_sharif"> <span>শরীফ (অফিস সহকারী)</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_surveyor"> <span>সার্ভেয়ার</span></label>
+
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_krishnanagar"> <span>কৃষ্ণনগর ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_protapgonj"> <span>প্রতাপগঞ্জ ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_doriadaulat"> <span>দরিয়াদৌলত ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_manikpur"> <span>মানিকপুর ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_sonarampur"> <span>সোনারামপুর ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_saifullakandi"> <span>ছয়ফুল্লাকান্দি ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_bishnurampur"> <span>বিষ্ণুরামপুর ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_salimabad"> <span>ছলিমাবাদ ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_rupsudi"> <span>রূপসদী ইউ. ভূমি অফিস</span></label>
+                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_dorikandi"> <span>দরিকান্দি ইউ. ভূমি অফিস</span></label>
+                        </div>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">মোবাইল নম্বর *</label>
-                        <input type="text" id="mobile" required placeholder="017XXXXXXXX" class="w-full px-3 py-2 border rounded text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয়ের ক্যাটাগরি *</label>
-                        <select id="category" required class="w-full px-3 py-2 border rounded text-sm bg-white">
-                            <option value="">ক্যাটাগরি নির্বাচন করুন...</option>
-                            <option value="অভিযোগ">অভিযোগ</option>
-                            <option value="ডিসি অফিসের চিঠি">ডিসি অফিসের চিঠি</option>
-                            <option value="এস এফ">এস এফ</option>
-                            <option value="পিটিশন মামলা">পিটিশন মামলা</option>
-                            <option value="সিআর মামলা">সিআর মামলা</option>
-                            <option value="আবেদন">আবেদন</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয় (বিস্তারিত) *</label>
-                        <input type="text" id="subject" required placeholder="যেমন: খাস জমি সংক্রান্ত / সীমানা বিরোধ" class="w-full px-3 py-2 border rounded text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাবেন (প্রারম্ভিক) *</label>
-                        <select id="initialAssistant" required class="w-full px-3 py-2 border rounded text-sm bg-white">
-                            <option value="">নির্বাচন করুন...</option>
-                            <option value="oa_arman">আরমান (অফিস সহকারী)</option>
-                            <option value="oa_saddam">সাদ্দাম (অফিস সহকারী)</option>
-                            <option value="oa_sharif">শরীফ (অফিস সহকারী)</option>
-                            <option value="oa_surveyor">সার্ভেয়ার</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-3">
                         <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2 rounded text-sm transition">আবেদন এন্ট্রি ও ফরোয়ার্ড করুন</button>
                     </div>
                 </form>
@@ -114,7 +134,7 @@
                     <input type="text" id="searchInput" onkeyup="filterApplications()" placeholder="আবেদন নং, নাম, ক্যাটাগরি বা মোবাইল দিয়ে খুঁজুন..." class="w-full px-3 py-2 border rounded text-sm">
                 </div>
                 <div class="text-sm text-gray-600 font-medium">
-                    মোট আবেদন: <span id="totalCount" class="font-bold text-custom-green">০</span> টি
+                    মোট এন্ট্রি/টাস্ক: <span id="totalCount" class="font-bold text-custom-green">০</span> টি
                 </div>
             </div>
 
@@ -185,8 +205,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / পুনর্বিবেচনার নির্দেশনা / নোট</label>
-                    <textarea id="forwardNote" rows="3" placeholder="আদেশ বা ব্যাক করার কারণ লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / পুনর্বিবেচনার নির্দেশনা / প্রতিবেদন নোট</label>
+                    <textarea id="forwardNote" rows="3" placeholder="আদেশ বা প্রতিবেদনের সংক্ষিপ্ত নোট লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm">বাতিল</button>
@@ -257,16 +277,16 @@
             "oa_sharif": "শরীফ (অফিস সহকারী)",
             "oa_surveyor": "সার্ভেয়ার",
 
-            "ulao_krishnanagar": "কৃষ্ণনগর ইউনিয়ন ভূমি অফিস",
-            "ulao_protapgonj": "প্রতাপগঞ্জ ইউনিয়ন ভূমি অফিস",
-            "ulao_doriadaulat": "দরিয়াদৌলত ইউনিয়ন ভূমি অফিস",
-            "ulao_manikpur": "মানিকপুর ইউনিয়ন ভূমি অফিস",
-            "ulao_sonarampur": "সোনারামপুর ইউনিয়ন ভূমি অফিস",
-            "ulao_saifullakandi": "ছয়ফুল্লাকান্দি ইউনিয়ন ভূমি অফিস",
-            "ulao_bishnurampur": "বিষ্ণুরামপুর ইউনিয়ন ভূমি অফিস",
-            "ulao_salimabad": "ছলিমাবাদ ইউনিয়ন ভূমি অফিস",
-            "ulao_rupsudi": "রূপসদী ইউনিয়ন ভূমি অফিস",
-            "ulao_dorikandi": "দরিকান্দি ইউনিয়ন ভূমি অফিস"
+            "ulao_krishnanagar": "কৃষ্ণনগর ইউ. ভূমি অফিস",
+            "ulao_protapgonj": "প্রতাপগঞ্জ ইউ. ভূমি অফিস",
+            "ulao_doriadaulat": "দরিয়াদৌলত ইউ. ভূমি অফিস",
+            "ulao_manikpur": "মানিকপুর ইউ. ভূমি অফিস",
+            "ulao_sonarampur": "সোনারামপুর ইউ. ভূমি অফিস",
+            "ulao_saifullakandi": "ছয়ফুল্লাকান্দি ইউ. ভূমি অফিস",
+            "ulao_bishnurampur": "বিষ্ণুরামপুর ইউ. ভূমি অফিস",
+            "ulao_salimabad": "ছলিমাবাদ ইউ. ভূমি অফিস",
+            "ulao_rupsudi": "রূপসদী ইউ. ভূমি অফিস",
+            "ulao_dorikandi": "দরিকান্দি ইউ. ভূমি অফিস"
         };
 
         let currentUser = null;
@@ -319,31 +339,57 @@
             location.reload();
         }
 
+        function toggleSelectAllUlao(checkbox) {
+            const checkboxes = document.querySelectorAll('#assigneeCheckboxGroup input[value^="ulao_"]');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
         function createApplication(e) {
             e.preventDefault();
-            const appNo = document.getElementById('appNo').value;
-            const applicant = document.getElementById('applicant').value;
-            const mobile = document.getElementById('mobile').value;
+            const baseAppNo = document.getElementById('appNo').value.trim();
+            const applicant = document.getElementById('applicant').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
             const category = document.getElementById('category').value;
-            const subject = document.getElementById('subject').value;
-            const targetAssistant = document.getElementById('initialAssistant').value;
+            const subject = document.getElementById('subject').value.trim();
 
-            const newApp = {
-                appNo, applicant, mobile, category, subject,
-                currentAssignee: targetAssistant,
-                status: "প্রসেসিংয়ে আছে",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                history: [{
-                    from: "ডাটা এন্ট্রি অপারেটর",
-                    to: ASSIGNEE_NAMES[targetAssistant],
-                    note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
-                    date: new Date().toLocaleString('bn-BD')
-                }]
-            };
+            const selectedAssignees = Array.from(document.querySelectorAll('input[name="assignees"]:checked')).map(cb => cb.value);
 
-            db.collection('applications').add(newApp).then(() => {
-                alert('আবেদনটি সফলভাবে যুক্ত হয়েছে!');
+            if (selectedAssignees.length === 0) {
+                alert('অনুগ্রহ করে অন্তত একজন প্রাপক নির্বাচন করুন।');
+                return;
+            }
+
+            const batch = db.batch();
+
+            selectedAssignees.forEach(targetAssistant => {
+                const docRef = db.collection('applications').doc();
+                
+                // If forwarded to multiple offices, append target name to App No for clarity
+                const displayAppNo = selectedAssignees.length > 1 && targetAssistant.startsWith('ulao_') 
+                    ? `${baseAppNo} (${ASSIGNEE_NAMES[targetAssistant].replace(' ইউ. ভূমি অফিস', '')})`
+                    : baseAppNo;
+
+                const newApp = {
+                    appNo: displayAppNo,
+                    baseAppNo: baseAppNo,
+                    applicant, mobile, category, subject,
+                    currentAssignee: targetAssistant,
+                    status: targetAssistant.startsWith('ulao_') ? "ইউনিয়নে তদন্তাধীন" : "প্রসেসিংয়ে আছে",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    history: [{
+                        from: "ডাটা এন্ট্রি অপারেটর",
+                        to: ASSIGNEE_NAMES[targetAssistant],
+                        note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
+                        date: new Date().toLocaleString('bn-BD')
+                    }]
+                };
+                batch.set(docRef, newApp);
+            });
+
+            batch.commit().then(() => {
+                alert(`সফলভাবে ${selectedAssignees.length} টি অফিসে আবেদনটি ফরোয়ার্ড করা হয়েছে!`);
                 document.getElementById('newAppForm').reset();
+                document.getElementById('selectAllUlao').checked = false;
             }).catch(err => alert('এরর: ' + err.message));
         }
 
@@ -395,6 +441,7 @@
             const q = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allApplications.filter(app => 
                 app.appNo.toLowerCase().includes(q) ||
+                (app.baseAppNo && app.baseAppNo.toLowerCase().includes(q)) ||
                 app.applicant.toLowerCase().includes(q) ||
                 app.mobile.toLowerCase().includes(q) ||
                 (app.category && app.category.toLowerCase().includes(q)) ||
@@ -418,9 +465,9 @@
                 forwardStatus.value = "পুনর্বিবেচনার জন্য প্রেরিত";
             } else {
                 modalTitle.innerText = "আবেদন ফরোয়ার্ড করুন";
-                submitBtn.innerText = "প্রেরণ করুন";
+                submitBtn.innerText = "প্রেন করুন";
                 submitBtn.className = "px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-sm";
-                forwardStatus.value = "প্রসেসিংয়ে আছে";
+                forwardStatus.value = currentUser.role === 'ulao' ? "প্রতিবেদন প্রাপ্ত" : "প্রসেসিংয়ে আছে";
             }
 
             document.getElementById('forwardModal').classList.remove('hidden');
@@ -474,7 +521,7 @@
                         <span>${index + 1}. ${h.from} ➔ ${h.to}</span>
                         <span class="text-gray-400 font-normal">${h.date}</span>
                     </div>
-                    <p class="text-gray-600">মন্তব্য: <span class="italic text-gray-800">${h.note}</span></p>
+                    <p class="text-gray-600">মন্তব্য/প্রতিবেদন: <span class="italic text-gray-800">${h.note}</span></p>
                 `;
                 list.appendChild(item);
             });
