@@ -60,7 +60,7 @@
         <!-- DASHBOARD SECTION -->
         <div id="dashboardSection" class="hidden space-y-6">
 
-            <!-- OPERATOR: NEW APPLICATION FORM -->
+            <!-- OPERATOR: NEW APPLICATION FORM (Single Forward) -->
             <div id="operatorFormCard" class="bg-white rounded-lg shadow-md p-6 hidden">
                 <h2 class="text-lg font-bold text-custom-green mb-4 pb-2 border-b">নতুন বিবিধ আবেদন যোগ করুন</h2>
                 <form id="newAppForm" onsubmit="createApplication(event)" class="space-y-4">
@@ -89,36 +89,20 @@
                                 <option value="আবেদন">আবেদন</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">প্রাথমিক প্রাপক (যার কাছে পাঠাবেন) *</label>
+                            <select id="initialAssignee" required class="w-full px-3 py-2 border rounded text-sm bg-white">
+                                <option value="">কর্মকর্তা বাছাই করুন...</option>
+                                <option value="oa_arman">আরমান (অফিস সহকারী)</option>
+                                <option value="oa_saddam">সাদ্দাম (অফিস সহকারী)</option>
+                                <option value="oa_sharif">শরীফ (অফিস সহকারী)</option>
+                                <option value="oa_surveyor">সার্ভেয়ার</option>
+                                <option value="ac_land">সহকারী কমিশনার (ভূমি)</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয় (বিস্তারিত) *</label>
                             <input type="text" id="subject" required placeholder="যেমন: খাস জমি সংক্রান্ত / সীমানা বিরোধ" class="w-full px-3 py-2 border rounded text-sm">
-                        </div>
-                    </div>
-
-                    <!-- MULTI-SELECT ASSIGNEE BOX -->
-                    <div class="border p-3 rounded-md bg-gray-50">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="block text-xs font-semibold text-gray-700">যার/যাদের কাছে পাঠাবেন (এক বা একাধিক সিলেক্ট করতে পারবেন) *</label>
-                            <label class="text-xs text-emerald-700 font-bold cursor-pointer">
-                                <input type="checkbox" id="selectAllUlao" onchange="toggleSelectAllUlao(this)"> সকল ইউনিয়ন ভূমি অফিস একসাথে সিলেক্ট করুন
-                            </label>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs" id="assigneeCheckboxGroup">
-                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_arman"> <span>আরমান (অফিস সহকারী)</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_saddam"> <span>সাদ্দাম (অফিস সহকারী)</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_sharif"> <span>শরীফ (অফিস সহকারী)</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="assignees" value="oa_surveyor"> <span>সার্ভেয়ার</span></label>
-
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_krishnanagar"> <span>কৃষ্ণনগর ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_protapgonj"> <span>প্রতাপগঞ্জ ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_doriadaulat"> <span>দরিয়াদৌলত ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_manikpur"> <span>মানিকপুর ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_sonarampur"> <span>সোনারামপুর ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_saifullakandi"> <span>ছয়ফুল্লাকান্দি ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_bishnurampur"> <span>বিষ্ণুরামপুর ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_salimabad"> <span>ছলিমাবাদ ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_rupsudi"> <span>রূপসদী ইউ. ভূমি অফিস</span></label>
-                            <label class="flex items-center space-x-1 space-x-reverse ulao-item"><input type="checkbox" name="assignees" value="ulao_dorikandi"> <span>দরিকান্দি ইউ. ভূমি অফিস</span></label>
                         </div>
                     </div>
 
@@ -160,53 +144,70 @@
 
         </div>
 
-        <!-- FORWARD / ACTION MODAL -->
+        <!-- FORWARD MODAL FOR ASSISTANTS / USERS -->
         <div id="forwardModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
+            <div class="bg-white rounded-lg max-w-lg w-full p-6 space-y-4">
                 <h3 id="modalTitle" class="text-lg font-bold text-gray-800 border-b pb-2">আবেদন ফরোয়ার্ড করুন</h3>
                 <input type="hidden" id="modalAppId">
                 <input type="hidden" id="isRollbackMode" value="false">
 
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাতে চান (Forward / Send Back To) *</label>
+                <!-- NORMAL SINGLE TARGET SELECT -->
+                <div id="singleTargetWrapper">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাতে চান *</label>
                     <select id="forwardTarget" class="w-full px-3 py-2 border rounded text-sm">
-                        <optgroup label="অফিস সহকারী ও সংশ্লিষ্ট কর্মকর্তা">
+                        <optgroup label="উপজেলা অফিস">
+                            <option value="ac_land">সহকারী কমিশনার (ভূমি)</option>
                             <option value="oa_arman">আরমান (অফিস সহকারী)</option>
                             <option value="oa_saddam">সাদ্দাম (অফিস সহকারী)</option>
                             <option value="oa_sharif">শরীফ (অফিস সহকারী)</option>
                             <option value="oa_surveyor">সার্ভেয়ার</option>
                         </optgroup>
-                        <optgroup label="ইউনিয়ন ভূমি সহকারী কর্মকর্তাবৃন্দ">
-                            <option value="ulao_krishnanagar">কৃষ্ণনগর ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_protapgonj">প্রতাপগঞ্জ ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_doriadaulat">দরিয়াদৌলত ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_manikpur">মানিকপুর ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_sonarampur">সোনারামপুর ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_saifullakandi">ছয়ফুল্লাকান্দি ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_bishnurampur">বিষ্ণুরামপুর ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_salimabad">ছলিমাবাদ ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_rupsudi">রূপসদী ইউনিয়ন ভূমি অফিস</option>
-                            <option value="ulao_dorikandi">দরিকান্দি ইউনিয়ন ভূমি অফিস</option>
-                        </optgroup>
-                        <optgroup label="উপজেলা ভূমি অফিস">
-                            <option value="ac_land">সহকারী কমিশনার (ভূমি)</option>
-                        </optgroup>
                     </select>
                 </div>
+
+                <!-- MULTI ASSIGNEE CHECKBOXES FOR ASSISTANTS -->
+                <div id="multiTargetWrapper" class="border p-3 rounded-md bg-gray-50 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-semibold text-gray-700">ইউনিয়ন ভূমি অফিস নির্বাচন করুন (এক বা একাধিক) *</label>
+                        <label class="text-xs text-emerald-700 font-bold cursor-pointer">
+                            <input type="checkbox" id="selectAllUlao" onchange="toggleSelectAllUlao(this)"> সকল ইউনিয়ন
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs" id="assigneeCheckboxGroup">
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_krishnanagar"> <span>কৃষ্ণনগর ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_protapgonj"> <span>প্রতাপগঞ্জ ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_doriadaulat"> <span>দরিয়াদৌলত ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_manikpur"> <span>মানিকপুর ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_sonarampur"> <span>সোনারামপুর ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_saifullakandi"> <span>ছয়ফুল্লাকান্দি ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_bishnurampur"> <span>বিষ্ণুরামপুর ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_salimabad"> <span>ছলিমাবাদ ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_rupsudi"> <span>রূপসদী ইউ. ভূমি অফিস</span></label>
+                        <label class="flex items-center space-x-1 space-x-reverse"><input type="checkbox" name="forwardAssignees" value="ulao_dorikandi"> <span>দরিকান্দি ইউ. ভূমি অফিস</span></label>
+                    </div>
+                </div>
+
+                <!-- MODE TOGGLE BUTTON FOR ASSISTANTS -->
+                <div id="assistantModeToggle" class="hidden">
+                    <button type="button" onclick="toggleForwardType()" id="toggleTypeBtn" class="text-xs text-blue-700 underline font-semibold">
+                        ➡️ ইউনিয়ন ভূমি অফিসে পাঠাতে চান? এখানে ক্লিক করুন
+                    </button>
+                </div>
+
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">স্ট্যাটাস পরিবর্তন</label>
                     <select id="forwardStatus" class="w-full px-3 py-2 border rounded text-sm">
                         <option value="প্রসেসিংয়ে আছে">প্রসেসিংয়ে আছে</option>
-                        <option value="পুনর্বিবেচনার জন্য প্রেরিত">পুনর্বিবেচনার জন্য প্রেরিত (স্টেপ ব্যাক)</option>
                         <option value="ইউনিয়নে তদন্তাধীন">ইউনিয়নে তদন্তাধীন</option>
                         <option value="প্রতিবেদন প্রাপ্ত">প্রতিবেদন প্রাপ্ত</option>
+                        <option value="পুনর্বিবেচনার জন্য প্রেরিত">পুনর্বিবেচনার জন্য প্রেরিত (স্টেপ ব্যাক)</option>
                         <option value="নিষ্পত্তি">নিষ্পত্তি</option>
                         <option value="খারিজ">খারিজ</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / পুনর্বিবেচনার নির্দেশনা / প্রতিবেদন নোট</label>
-                    <textarea id="forwardNote" rows="3" placeholder="আদেশ বা প্রতিবেদনের সংক্ষিপ্ত নোট লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / নির্দেশনা / প্রতিবেদন নোট</label>
+                    <textarea id="forwardNote" rows="3" placeholder="আদেশ বা নির্দেশনার নোট লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
                 </div>
                 <div class="flex justify-end space-x-2 space-x-reverse">
                     <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm">বাতিল</button>
@@ -291,6 +292,7 @@
 
         let currentUser = null;
         let allApplications = [];
+        let isMultiForwardMode = false;
 
         window.onload = function() {
             const savedUser = localStorage.getItem('tracker_user');
@@ -340,56 +342,38 @@
         }
 
         function toggleSelectAllUlao(checkbox) {
-            const checkboxes = document.querySelectorAll('#assigneeCheckboxGroup input[value^="ulao_"]');
+            const checkboxes = document.querySelectorAll('#assigneeCheckboxGroup input[name="forwardAssignees"]');
             checkboxes.forEach(cb => cb.checked = checkbox.checked);
         }
 
         function createApplication(e) {
             e.preventDefault();
-            const baseAppNo = document.getElementById('appNo').value.trim();
+            const appNo = document.getElementById('appNo').value.trim();
             const applicant = document.getElementById('applicant').value.trim();
             const mobile = document.getElementById('mobile').value.trim();
             const category = document.getElementById('category').value;
+            const initialAssignee = document.getElementById('initialAssignee').value;
             const subject = document.getElementById('subject').value.trim();
 
-            const selectedAssignees = Array.from(document.querySelectorAll('input[name="assignees"]:checked')).map(cb => cb.value);
+            const newApp = {
+                appNo: appNo,
+                baseAppNo: appNo,
+                applicant, mobile, category, subject,
+                currentAssignee: initialAssignee,
+                sentByAssistant: null, // Tracked when assistant forwards to ULAO
+                status: "প্রসেসিংয়ে আছে",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                history: [{
+                    from: "ডাটা এন্ট্রি অপারেটর",
+                    to: ASSIGNEE_NAMES[initialAssignee],
+                    note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
+                    date: new Date().toLocaleString('bn-BD')
+                }]
+            };
 
-            if (selectedAssignees.length === 0) {
-                alert('অনুগ্রহ করে অন্তত একজন প্রাপক নির্বাচন করুন।');
-                return;
-            }
-
-            const batch = db.batch();
-
-            selectedAssignees.forEach(targetAssistant => {
-                const docRef = db.collection('applications').doc();
-                
-                // If forwarded to multiple offices, append target name to App No for clarity
-                const displayAppNo = selectedAssignees.length > 1 && targetAssistant.startsWith('ulao_') 
-                    ? `${baseAppNo} (${ASSIGNEE_NAMES[targetAssistant].replace(' ইউ. ভূমি অফিস', '')})`
-                    : baseAppNo;
-
-                const newApp = {
-                    appNo: displayAppNo,
-                    baseAppNo: baseAppNo,
-                    applicant, mobile, category, subject,
-                    currentAssignee: targetAssistant,
-                    status: targetAssistant.startsWith('ulao_') ? "ইউনিয়নে তদন্তাধীন" : "প্রসেসিংয়ে আছে",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    history: [{
-                        from: "ডাটা এন্ট্রি অপারেটর",
-                        to: ASSIGNEE_NAMES[targetAssistant],
-                        note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
-                        date: new Date().toLocaleString('bn-BD')
-                    }]
-                };
-                batch.set(docRef, newApp);
-            });
-
-            batch.commit().then(() => {
-                alert(`সফলভাবে ${selectedAssignees.length} টি অফিসে আবেদনটি ফরোয়ার্ড করা হয়েছে!`);
+            db.collection('applications').add(newApp).then(() => {
+                alert('আবেদনটি সফলভাবে এন্ট্রি ও ফরোয়ার্ড করা হয়েছে!');
                 document.getElementById('newAppForm').reset();
-                document.getElementById('selectAllUlao').checked = false;
             }).catch(err => alert('এরর: ' + err.message));
         }
 
@@ -408,7 +392,12 @@
             data.forEach(app => {
                 const isMyFile = app.currentAssignee === currentUser.id;
                 const isAcLand = currentUser.role === 'ac_land';
-                const canView = isAcLand || (currentUser.role === 'operator') || isMyFile;
+                const isOperator = currentUser.role === 'operator';
+                
+                // Assistant can view if assigned OR if they originally sent it to ULAO
+                const isMySentToUlao = (currentUser.role === 'assistant') && (app.sentByAssistant === currentUser.id);
+
+                const canView = isAcLand || isOperator || isMyFile || isMySentToUlao;
 
                 if (!canView) return;
                 count++;
@@ -457,6 +446,16 @@
             const modalTitle = document.getElementById('modalTitle');
             const submitBtn = document.getElementById('submitActionBtn');
             const forwardStatus = document.getElementById('forwardStatus');
+            const toggleWrapper = document.getElementById('assistantModeToggle');
+
+            isMultiForwardMode = false;
+            updateForwardModeUI();
+
+            if (currentUser.role === 'assistant') {
+                toggleWrapper.classList.remove('hidden');
+            } else {
+                toggleWrapper.classList.add('hidden');
+            }
 
             if (isRollback) {
                 modalTitle.innerText = "আবেদন পূর্বের ধাপে ব্যাক করুন (AC Land Power)";
@@ -465,12 +464,36 @@
                 forwardStatus.value = "পুনর্বিবেচনার জন্য প্রেরিত";
             } else {
                 modalTitle.innerText = "আবেদন ফরোয়ার্ড করুন";
-                submitBtn.innerText = "প্রেন করুন";
+                submitBtn.innerText = "প্রেরণ করুন";
                 submitBtn.className = "px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-sm";
                 forwardStatus.value = currentUser.role === 'ulao' ? "প্রতিবেদন প্রাপ্ত" : "প্রসেসিংয়ে আছে";
             }
 
             document.getElementById('forwardModal').classList.remove('hidden');
+        }
+
+        function toggleForwardType() {
+            isMultiForwardMode = !isMultiForwardMode;
+            updateForwardModeUI();
+        }
+
+        function updateForwardModeUI() {
+            const singleWrapper = document.getElementById('singleTargetWrapper');
+            const multiWrapper = document.getElementById('multiTargetWrapper');
+            const toggleBtn = document.getElementById('toggleTypeBtn');
+            const forwardStatus = document.getElementById('forwardStatus');
+
+            if (isMultiForwardMode) {
+                singleWrapper.classList.add('hidden');
+                multiWrapper.classList.remove('hidden');
+                toggleBtn.innerText = "⬅️ সাধারণ অফিসে (একক ব্যক্তি) পাঠাতে এখানে ক্লিক করুন";
+                forwardStatus.value = "ইউনিয়নে তদন্তাধীন";
+            } else {
+                singleWrapper.classList.remove('hidden');
+                multiWrapper.classList.add('hidden');
+                toggleBtn.innerText = "➡️ ইউনিয়ন ভূমি অফিসে পাঠাতে চান? এখানে ক্লিক করুন";
+                forwardStatus.value = "প্রসেসিংয়ে আছে";
+            }
         }
 
         function closeModal() {
@@ -480,30 +503,80 @@
         function submitForward() {
             const appId = document.getElementById('modalAppId').value;
             const isRollback = document.getElementById('isRollbackMode').value === "true";
-            const target = document.getElementById('forwardTarget').value;
             const status = document.getElementById('forwardStatus').value;
             const note = document.getElementById('forwardNote').value;
 
             const app = allApplications.find(a => a.id === appId);
             if (!app) return;
 
-            const actionLabel = isRollback ? "↩️ [স্টেপ ব্যাক করা হয়েছে]" : "";
-            const historyEntry = {
-                from: `${currentUser.name} ${actionLabel}`,
-                to: ASSIGNEE_NAMES[target],
-                note: note || (isRollback ? "সহকারী কমিশনার (ভূমি) কর্তৃক পুনঃনিরীক্ষণের জন্য ব্যাক করা হয়েছে।" : "কোনো নোট নেই"),
-                date: new Date().toLocaleString('bn-BD')
-            };
+            // MULTI FORWARD TO ULAO (OFFICE ASSISTANT SPECIAL)
+            if (isMultiForwardMode && currentUser.role === 'assistant') {
+                const selectedAssignees = Array.from(document.querySelectorAll('input[name="forwardAssignees"]:checked')).map(cb => cb.value);
 
-            db.collection('applications').doc(appId).update({
-                currentAssignee: target,
-                status: status,
-                history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
-            }).then(() => {
-                alert(isRollback ? 'আবেদনটি সফলভাবে পূর্বের ধাপে ব্যাক করা হয়েছে!' : 'আবেদনটি ফরোয়ার্ড করা হয়েছে!');
-                closeModal();
-                document.getElementById('forwardNote').value = '';
-            });
+                if (selectedAssignees.length === 0) {
+                    alert('অনুগ্রহ করে অন্তত একটি ইউনিয়ন ভূমি অফিস নির্বাচন করুন।');
+                    return;
+                }
+
+                const batch = db.batch();
+
+                // Delete original single app row or convert it into sub-tasks
+                const originalRef = db.collection('applications').doc(appId);
+                batch.delete(originalRef);
+
+                selectedAssignees.forEach(targetUlao => {
+                    const newDocRef = db.collection('applications').doc();
+                    const displayAppNo = selectedAssignees.length > 1 
+                        ? `${app.baseAppNo || app.appNo} (${ASSIGNEE_NAMES[targetUlao].replace(' ইউ. ভূমি অফিস', '')})`
+                        : app.appNo;
+
+                    const newHistory = [...(app.history || []), {
+                        from: currentUser.name,
+                        to: ASSIGNEE_NAMES[targetUlao],
+                        note: note || "ইউনিয়ন ভূমি অফিসে তদন্ত ও প্রতিবেদনের জন্য পাঠানো হলো।",
+                        date: new Date().toLocaleString('bn-BD')
+                    }];
+
+                    batch.set(newDocRef, {
+                        ...app,
+                        id: newDocRef.id,
+                        appNo: displayAppNo,
+                        baseAppNo: app.baseAppNo || app.appNo,
+                        currentAssignee: targetUlao,
+                        sentByAssistant: currentUser.id, // Keeps track so assistant can view!
+                        status: status,
+                        history: newHistory
+                    });
+                });
+
+                batch.commit().then(() => {
+                    alert(`সফলভাবে ${selectedAssignees.length} টি ইউনিয়ন অফিসে পাঠানো হয়েছে!`);
+                    closeModal();
+                    document.getElementById('forwardNote').value = '';
+                });
+
+            } else {
+                // NORMAL SINGLE FORWARD
+                const target = document.getElementById('forwardTarget').value;
+                const actionLabel = isRollback ? "↩️ [স্টেপ ব্যাক করা হয়েছে]" : "";
+                
+                const historyEntry = {
+                    from: `${currentUser.name} ${actionLabel}`,
+                    to: ASSIGNEE_NAMES[target],
+                    note: note || (isRollback ? "সহকারী কমিশনার (ভূমি) কর্তৃক পুনঃনিরীক্ষণের জন্য ব্যাক করা হয়েছে।" : "কোনো নোট নেই"),
+                    date: new Date().toLocaleString('bn-BD')
+                };
+
+                db.collection('applications').doc(appId).update({
+                    currentAssignee: target,
+                    status: status,
+                    history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
+                }).then(() => {
+                    alert(isRollback ? 'আবেদনটি সফলভাবে ব্যাক করা হয়েছে!' : 'আবেদনটি ফরোয়ার্ড করা হয়েছে!');
+                    closeModal();
+                    document.getElementById('forwardNote').value = '';
+                });
+            }
         }
 
         function showHistory(appId) {
