@@ -14,6 +14,9 @@
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
         .bg-custom-green { background-color: #004d40; }
         .text-custom-green { color: #004d40; }
+        .priority-row { border-left: 5px solid #dc2626 !important; background-color: #fef2f2; }
+        .overdue-badge { background-color: #ef4444; color: white; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -46,7 +49,7 @@
             <form id="loginForm" onsubmit="login(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">ইউজার আইডি</label>
-                    <input type="text" id="loginEmail" required placeholder="যেমন: arman, saddam, krishnanagar, acland" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                    <input type="text" id="loginEmail" required placeholder="যেমন: acland, arman, krishnanagar, operator" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">পাসওয়ার্ড</label>
@@ -60,7 +63,39 @@
         <!-- DASHBOARD SECTION -->
         <div id="dashboardSection" class="hidden space-y-6">
 
-            <!-- OPERATOR: NEW APPLICATION FORM (Single Forward) -->
+            <!-- AC LAND EXECUTIVE SUMMARY CARDS (Feature 1 & 3) -->
+            <div id="acLandSummaryCards" class="hidden grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-600 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">মোট একটিভ ফাইল</p>
+                        <h3 id="cardTotalActive" class="text-2xl font-bold text-gray-800">০</h3>
+                    </div>
+                    <span class="text-3xl">📁</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-600 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">🚨 জরুরি ফাইল</p>
+                        <h3 id="cardPriorityCount" class="text-2xl font-bold text-red-600">০</h3>
+                    </div>
+                    <span class="text-3xl">🚨</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-amber-500 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">⚠️ সময় অতিক্রান্ত (Overdue)</p>
+                        <h3 id="cardOverdueCount" class="text-2xl font-bold text-amber-600">০</h3>
+                    </div>
+                    <span class="text-3xl">⏳</span>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-emerald-600 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">✅ মোট নিষ্পত্তি</p>
+                        <h3 id="cardCompletedCount" class="text-2xl font-bold text-emerald-600">০</h3>
+                    </div>
+                    <span class="text-3xl">✅</span>
+                </div>
+            </div>
+
+            <!-- OPERATOR: NEW APPLICATION FORM -->
             <div id="operatorFormCard" class="bg-white rounded-lg shadow-md p-6 hidden">
                 <h2 class="text-lg font-bold text-custom-green mb-4 pb-2 border-b">নতুন বিবিধ আবেদন যোগ করুন</h2>
                 <form id="newAppForm" onsubmit="createApplication(event)" class="space-y-4">
@@ -90,7 +125,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">প্রাথমিক প্রাপক (যার কাছে পাঠাবেন) *</label>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">প্রাথমিক প্রাপক *</label>
                             <select id="initialAssignee" required class="w-full px-3 py-2 border rounded text-sm bg-white">
                                 <option value="">কর্মকর্তা বাছাই করুন...</option>
                                 <option value="oa_arman">আরমান (অফিস সহকারী)</option>
@@ -101,8 +136,18 @@
                             </select>
                         </div>
                         <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">সময়সীমা/মেয়াদ (দিন) *</label>
+                            <input type="number" id="targetDays" value="7" min="1" required class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয় (বিস্তারিত) *</label>
                             <input type="text" id="subject" required placeholder="যেমন: খাস জমি সংক্রান্ত / সীমানা বিরোধ" class="w-full px-3 py-2 border rounded text-sm">
+                        </div>
+                        <div class="flex items-center pt-5">
+                            <label class="flex items-center space-x-2 space-x-reverse cursor-pointer text-red-600 font-bold text-sm">
+                                <input type="checkbox" id="isPriority" class="w-4 h-4 accent-red-600">
+                                <span>🚨 এটি জরুরি ফাইল (High Priority)</span>
+                            </label>
                         </div>
                     </div>
 
@@ -112,13 +157,34 @@
                 </form>
             </div>
 
-            <!-- SEARCH & FILTER -->
+            <!-- SEARCH & ADVANCED FILTERS (Feature 3) -->
             <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="w-full md:w-1/3">
-                    <input type="text" id="searchInput" onkeyup="filterApplications()" placeholder="আবেদন নং, নাম, ক্যাটাগরি বা মোবাইল দিয়ে খুঁজুন..." class="w-full px-3 py-2 border rounded text-sm">
+                <div class="w-full md:w-1/2 flex gap-2">
+                    <input type="text" id="searchInput" onkeyup="filterApplications()" placeholder="আবেদন নং, নাম, বিষয় বা মোবাইল দিয়ে খুঁজুন..." class="w-full px-3 py-2 border rounded text-sm">
+                    <select id="assigneeFilter" onchange="filterApplications()" class="border rounded text-sm px-2 bg-gray-50 text-gray-700">
+                        <option value="">সকল কর্মকর্তা/ইউনিয়ন</option>
+                        <optgroup label="অফিস সহকারী">
+                            <option value="oa_arman">আরমান</option>
+                            <option value="oa_saddam">সাদ্দাম</option>
+                            <option value="oa_sharif">শরীফ</option>
+                            <option value="oa_surveyor">সার্ভেয়ার</option>
+                        </optgroup>
+                        <optgroup label="ইউনিয়ন ভূমি অফিস">
+                            <option value="ulao_krishnanagar">কৃষ্ণনগর</option>
+                            <option value="ulao_protapgonj">প্রতাপগঞ্জ</option>
+                            <option value="ulao_doriadaulat">দরিয়াদৌলত</option>
+                            <option value="ulao_manikpur">মানিকপুর</option>
+                            <option value="ulao_sonarampur">সোনারামপুর</option>
+                            <option value="ulao_saifullakandi">ছয়ফুল্লাকান্দি</option>
+                            <option value="ulao_bishnurampur">বিষ্ণুরামপুর</option>
+                            <option value="ulao_salimabad">ছলিমাবাদ</option>
+                            <option value="ulao_rupsudi">রূপসদী</option>
+                            <option value="ulao_dorikandi">দরিকান্দি</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div class="text-sm text-gray-600 font-medium">
-                    মোট এন্ট্রি/টাস্ক: <span id="totalCount" class="font-bold text-custom-green">০</span> টি
+                    প্রদর্শিত ফাইল: <span id="totalCount" class="font-bold text-custom-green">০</span> টি
                 </div>
             </div>
 
@@ -128,13 +194,13 @@
                     <table class="w-full text-left text-sm text-gray-600">
                         <thead class="bg-gray-100 text-gray-700 uppercase text-xs border-b">
                             <tr>
-                                <th class="p-3">আবেদন নং</th>
+                                <th class="p-3">আবেদন নং ও অগ্রাধিকার</th>
                                 <th class="p-3">আবেদনকারী ও মোবাইল</th>
                                 <th class="p-3">ক্যাটাগরি ও বিষয়</th>
                                 <th class="p-3">বর্তমান অবস্থান</th>
+                                <th class="p-3">সময়সীমা / ওভারডিউ</th>
                                 <th class="p-3">স্ট্যাটাস</th>
-                                <th class="p-3">সর্বশেষ আপডেট</th>
-                                <th class="p-3 text-center">অ্যাকশন / নিয়ন্ত্রণ</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
                             </tr>
                         </thead>
                         <tbody id="appTableBody" class="divide-y divide-gray-200"></tbody>
@@ -194,17 +260,27 @@
                     </button>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">স্ট্যাটাস পরিবর্তন</label>
-                    <select id="forwardStatus" class="w-full px-3 py-2 border rounded text-sm">
-                        <option value="প্রসেসিংয়ে আছে">প্রসেসিংয়ে আছে</option>
-                        <option value="ইউনিয়নে তদন্তাধীন">ইউনিয়নে তদন্তাধীন</option>
-                        <option value="প্রতিবেদন প্রাপ্ত">প্রতিবেদন প্রাপ্ত</option>
-                        <option value="পুনর্বিবেচনার জন্য প্রেরিত">পুনর্বিবেচনার জন্য প্রেরিত (স্টেপ ব্যাক)</option>
-                        <option value="নিষ্পত্তি">নিষ্পত্তি</option>
-                        <option value="খারিজ">খারিজ</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">স্ট্যাটাস পরিবর্তন</label>
+                        <select id="forwardStatus" class="w-full px-3 py-2 border rounded text-sm">
+                            <option value="প্রসেসিংয়ে আছে">প্রসেসিংয়ে আছে</option>
+                            <option value="ইউনিয়নে তদন্তাধীন">ইউনিয়নে তদন্তাধীন</option>
+                            <option value="প্রতিবেদন প্রাপ্ত">প্রতিবেদন প্রাপ্ত</option>
+                            <option value="পুনর্বিবেচনার জন্য প্রেরিত">পুনর্বিবেচনার জন্য প্রেরিত (স্টেপ ব্যাক)</option>
+                            <option value="নিষ্পত্তি">নিষ্পত্তি</option>
+                            <option value="খারিজ">খারিজ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">জরুরি ফ্ল্যাগ (Priority)</label>
+                        <select id="modalPriority" class="w-full px-3 py-2 border rounded text-sm">
+                            <option value="false">সাধারণ (Normal)</option>
+                            <option value="true">🚨 জরুরি (High Priority)</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / নির্দেশনা / প্রতিবেদন নোট</label>
                     <textarea id="forwardNote" rows="3" placeholder="আদেশ বা নির্দেশনার নোট লিখুন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
@@ -272,12 +348,10 @@
         const ASSIGNEE_NAMES = {
             "operator": "ডাটা এন্ট্রি অপারেটর",
             "ac_land": "সহকারী কমিশনার (ভূমি)",
-            
             "oa_arman": "আরমান (অফিস সহকারী)",
             "oa_saddam": "সাদ্দাম (অফিস সহকারী)",
             "oa_sharif": "শরীফ (অফিস সহকারী)",
             "oa_surveyor": "সার্ভেয়ার",
-
             "ulao_krishnanagar": "কৃষ্ণনগর ইউ. ভূমি অফিস",
             "ulao_protapgonj": "প্রতাপগঞ্জ ইউ. ভূমি অফিস",
             "ulao_doriadaulat": "দরিয়াদৌলত ইউ. ভূমি অফিস",
@@ -332,6 +406,12 @@
                 document.getElementById('operatorFormCard').classList.add('hidden');
             }
 
+            if (currentUser.role === 'ac_land') {
+                document.getElementById('acLandSummaryCards').classList.remove('hidden');
+            } else {
+                document.getElementById('acLandSummaryCards').classList.add('hidden');
+            }
+
             listenApplications();
         }
 
@@ -354,19 +434,27 @@
             const category = document.getElementById('category').value;
             const initialAssignee = document.getElementById('initialAssignee').value;
             const subject = document.getElementById('subject').value.trim();
+            const isPriority = document.getElementById('isPriority').checked;
+            const targetDays = parseInt(document.getElementById('targetDays').value) || 7;
+
+            // Target date calculation
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + targetDays);
 
             const newApp = {
                 appNo: appNo,
                 baseAppNo: appNo,
                 applicant, mobile, category, subject,
+                isPriority: isPriority,
                 currentAssignee: initialAssignee,
-                sentByAssistant: null, // Tracked when assistant forwards to ULAO
+                sentByAssistant: null,
                 status: "প্রসেসিংয়ে আছে",
+                dueDate: dueDate.toISOString(),
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 history: [{
                     from: "ডাটা এন্ট্রি অপারেটর",
                     to: ASSIGNEE_NAMES[initialAssignee],
-                    note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
+                    note: `নতুন আবেদন এন্ট্রি করা হয়েছে। সময়সীমা: ${targetDays} দিন।`,
                     date: new Date().toLocaleString('bn-BD')
                 }]
             };
@@ -380,8 +468,36 @@
         function listenApplications() {
             db.collection('applications').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 allApplications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateSummaryCards(allApplications);
                 renderTable(allApplications);
             });
+        }
+
+        function updateSummaryCards(data) {
+            if (currentUser.role !== 'ac_land') return;
+
+            let activeCount = 0;
+            let priorityCount = 0;
+            let overdueCount = 0;
+            let completedCount = 0;
+            const now = new Date();
+
+            data.forEach(app => {
+                const isFinished = app.status === 'নিষ্পত্তি' || app.status === 'খারিজ';
+                
+                if (isFinished) {
+                    completedCount++;
+                } else {
+                    activeCount++;
+                    if (app.isPriority) priorityCount++;
+                    if (app.dueDate && new Date(app.dueDate) < now) overdueCount++;
+                }
+            });
+
+            document.getElementById('cardTotalActive').innerText = activeCount;
+            document.getElementById('cardPriorityCount').innerText = priorityCount;
+            document.getElementById('cardOverdueCount').innerText = overdueCount;
+            document.getElementById('cardCompletedCount').innerText = completedCount;
         }
 
         function renderTable(data) {
@@ -389,12 +505,15 @@
             tbody.innerHTML = '';
 
             let count = 0;
-            data.forEach(app => {
+            const now = new Date();
+
+            // Sort: Priority files first
+            const sortedData = [...data].sort((a, b) => (b.isPriority === true ? 1 : 0) - (a.isPriority === true ? 1 : 0));
+
+            sortedData.forEach(app => {
                 const isMyFile = app.currentAssignee === currentUser.id;
                 const isAcLand = currentUser.role === 'ac_land';
                 const isOperator = currentUser.role === 'operator';
-                
-                // Assistant can view if assigned OR if they originally sent it to ULAO
                 const isMySentToUlao = (currentUser.role === 'assistant') && (app.sentByAssistant === currentUser.id);
 
                 const canView = isAcLand || isOperator || isMyFile || isMySentToUlao;
@@ -403,22 +522,40 @@
                 count++;
 
                 const tr = document.createElement('tr');
-                tr.className = isMyFile ? "bg-amber-50 font-medium" : "hover:bg-gray-50";
+                
+                // Priority Styling
+                let rowClasses = app.isPriority ? "priority-row font-medium" : (isMyFile ? "bg-amber-50 font-medium" : "hover:bg-gray-50");
+                tr.className = rowClasses;
+
+                // Priority Badge
+                const priorityBadge = app.isPriority ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ml-1">🚨 জরুরি</span>` : '';
+
+                // Overdue Check
+                let dueHtml = '-';
+                if (app.dueDate && app.status !== 'নিষ্পত্তি' && app.status !== 'খারিজ') {
+                    const dDate = new Date(app.dueDate);
+                    const formattedDate = dDate.toLocaleDateString('bn-BD');
+                    if (dDate < now) {
+                        dueHtml = `<span class="px-2 py-0.5 rounded text-xs font-bold overdue-badge">⚠️ মেয়াদ্দোত্তীর্ণ (${formattedDate})</span>`;
+                    } else {
+                        dueHtml = `<span class="text-xs text-gray-600">📅 ${formattedDate}</span>`;
+                    }
+                }
 
                 const historyBtn = `<button onclick="showHistory('${app.id}')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">গতিপথ</button>`;
                 const forwardBtn = isMyFile ? `<button onclick="openForwardModal('${app.id}', false)" class="text-xs bg-emerald-700 text-white px-2 py-1 rounded hover:bg-emerald-800 ml-1">ফরোয়ার্ড</button>` : '';
-                const stepBackBtn = isAcLand ? `<button onclick="openForwardModal('${app.id}', true)" class="text-xs bg-amber-600 text-white px-2 py-1 rounded hover:bg-amber-700 ml-1">↩️ ব্যাক করুন</button>` : '';
+                const stepBackBtn = isAcLand ? `<button onclick="openForwardModal('${app.id}', true)" class="text-xs bg-amber-600 text-white px-2 py-1 rounded hover:bg-amber-700 ml-1">↩️ ব্যাক</button>` : '';
 
                 const categoryBadge = app.category ? `<span class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded font-semibold inline-block mb-1">${app.category}</span><br>` : '';
 
                 tr.innerHTML = `
-                    <td class="p-3 font-bold text-gray-800">${app.appNo}</td>
+                    <td class="p-3 font-bold text-gray-800">${app.appNo} ${priorityBadge}</td>
                     <td class="p-3">${app.applicant}<br><span class="text-xs text-gray-500">📞 ${app.mobile}</span></td>
                     <td class="p-3">${categoryBadge}<span class="text-gray-700">${app.subject}</span></td>
                     <td class="p-3"><span class="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded font-semibold">${ASSIGNEE_NAMES[app.currentAssignee] || app.currentAssignee}</span></td>
+                    <td class="p-3">${dueHtml}</td>
                     <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">${app.status}</span></td>
-                    <td class="p-3 text-xs">${app.history && app.history.length > 0 ? app.history[app.history.length - 1].date : '-'}</td>
-                    <td class="p-3 text-center">${historyBtn} ${forwardBtn} ${stepBackBtn}</td>
+                    <td class="p-3 text-center whitespace-nowrap">${historyBtn} ${forwardBtn} ${stepBackBtn}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -428,20 +565,32 @@
 
         function filterApplications() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allApplications.filter(app => 
-                app.appNo.toLowerCase().includes(q) ||
-                (app.baseAppNo && app.baseAppNo.toLowerCase().includes(q)) ||
-                app.applicant.toLowerCase().includes(q) ||
-                app.mobile.toLowerCase().includes(q) ||
-                (app.category && app.category.toLowerCase().includes(q)) ||
-                app.subject.toLowerCase().includes(q)
-            );
+            const selectedAssignee = document.getElementById('assigneeFilter').value;
+
+            const filtered = allApplications.filter(app => {
+                const matchesQuery = app.appNo.toLowerCase().includes(q) ||
+                    (app.baseAppNo && app.baseAppNo.toLowerCase().includes(q)) ||
+                    app.applicant.toLowerCase().includes(q) ||
+                    app.mobile.toLowerCase().includes(q) ||
+                    (app.category && app.category.toLowerCase().includes(q)) ||
+                    app.subject.toLowerCase().includes(q);
+
+                const matchesAssignee = selectedAssignee === "" || app.currentAssignee === selectedAssignee;
+
+                return matchesQuery && matchesAssignee;
+            });
+
             renderTable(filtered);
         }
 
         function openForwardModal(appId, isRollback = false) {
             document.getElementById('modalAppId').value = appId;
             document.getElementById('isRollbackMode').value = isRollback;
+
+            const app = allApplications.find(a => a.id === appId);
+            if(app) {
+                document.getElementById('modalPriority').value = app.isPriority ? "true" : "false";
+            }
 
             const modalTitle = document.getElementById('modalTitle');
             const submitBtn = document.getElementById('submitActionBtn');
@@ -505,11 +654,12 @@
             const isRollback = document.getElementById('isRollbackMode').value === "true";
             const status = document.getElementById('forwardStatus').value;
             const note = document.getElementById('forwardNote').value;
+            const isPriority = document.getElementById('modalPriority').value === "true";
 
             const app = allApplications.find(a => a.id === appId);
             if (!app) return;
 
-            // MULTI FORWARD TO ULAO (OFFICE ASSISTANT SPECIAL)
+            // MULTI FORWARD TO ULAO
             if (isMultiForwardMode && currentUser.role === 'assistant') {
                 const selectedAssignees = Array.from(document.querySelectorAll('input[name="forwardAssignees"]:checked')).map(cb => cb.value);
 
@@ -519,8 +669,6 @@
                 }
 
                 const batch = db.batch();
-
-                // Delete original single app row or convert it into sub-tasks
                 const originalRef = db.collection('applications').doc(appId);
                 batch.delete(originalRef);
 
@@ -543,7 +691,8 @@
                         appNo: displayAppNo,
                         baseAppNo: app.baseAppNo || app.appNo,
                         currentAssignee: targetUlao,
-                        sentByAssistant: currentUser.id, // Keeps track so assistant can view!
+                        sentByAssistant: currentUser.id,
+                        isPriority: isPriority,
                         status: status,
                         history: newHistory
                     });
@@ -570,6 +719,7 @@
                 db.collection('applications').doc(appId).update({
                     currentAssignee: target,
                     status: status,
+                    isPriority: isPriority,
                     history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
                 }).then(() => {
                     alert(isRollback ? 'আবেদনটি সফলভাবে ব্যাক করা হয়েছে!' : 'আবেদনটি ফরোয়ার্ড করা হয়েছে!');
