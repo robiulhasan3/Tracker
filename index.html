@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আবেদন ট্র্যাকিং সিস্টেম — সহকারী কমিশনার (ভূমি)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase Firestore Only (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
+        .bg-custom-green { background-color: #004d40; }
+        .text-custom-green { color: #004d40; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Header -->
+    <header class="bg-custom-green text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">উপজেলা ভূমি অফিস — আবেদন ট্র্যাকিং সিস্টেম</h1>
+                <p class="text-sm opacity-80">সহকারী কমিশনার (ভূমি) এর কার্যালয়</p>
+            </div>
+            <div id="userInfo" class="hidden flex items-center space-x-4 space-x-reverse">
+                <div class="text-right">
+                    <p id="userName" class="font-semibold text-sm"></p>
+                    <p id="userRoleBadge" class="text-xs bg-emerald-700 px-2 py-0.5 rounded text-emerald-100 inline-block"></p>
+                </div>
+                <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1.5 rounded transition">লগআউট</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow">
+
+        <!-- LOGIN SECTION -->
+        <div id="loginSection" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mt-10">
+            <h2 class="text-xl font-bold text-center text-gray-800 mb-2">সিস্টেমে প্রবেশ করুন</h2>
+            <p class="text-xs text-center text-gray-500 mb-6">আপনার ইউজার আইডি ও পাসওয়ার্ড দিন</p>
+            
+            <form id="loginForm" onsubmit="login(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ইউজার আইডি</label>
+                    <input type="text" id="loginEmail" required placeholder="যেমন: arman, saddam, krishnanagar, acland" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">পাসওয়ার্ড</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                </div>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2 rounded-md transition">লগইন করুন</button>
+            </form>
+            <p id="loginError" class="text-red-500 text-sm mt-3 text-center hidden"></p>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" class="hidden space-y-6">
+
+            <!-- OPERATOR: NEW APPLICATION FORM -->
+            <div id="operatorFormCard" class="bg-white rounded-lg shadow-md p-6 hidden">
+                <h2 class="text-lg font-bold text-custom-green mb-4 pb-2 border-b">নতুন বিবিধ আবেদন যোগ করুন</h2>
+                <form id="newAppForm" onsubmit="createApplication(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদন / স্মারক নম্বর *</label>
+                        <input type="text" id="appNo" required placeholder="যেমন: ৩.৪৫/২০২৬" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদনকারীর নাম *</label>
+                        <input type="text" id="applicant" required placeholder="নাম" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">মোবাইল নম্বর *</label>
+                        <input type="text" id="mobile" required placeholder="017XXXXXXXX" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদনের বিষয় *</label>
+                        <input type="text" id="subject" required placeholder="যেমন: খাস জমি সংক্রান্ত / সীমানা বিরোধ" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাবেন (প্রারম্ভিক) *</label>
+                        <select id="initialAssistant" required class="w-full px-3 py-2 border rounded text-sm">
+                            <option value="">নির্বাচন করুন...</option>
+                            <option value="oa_arman">আরমান (অফিস সহকারী)</option>
+                            <option value="oa_saddam">সাদ্দাম (অফিস সহকারী)</option>
+                            <option value="oa_sharif">শরীফ (অফিস সহকারী)</option>
+                            <option value="oa_surveyor">সার্ভেয়ার</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-3">
+                        <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2 rounded text-sm transition">আবেদন এন্ট্রি ও ফরোয়ার্ড করুন</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SEARCH & FILTER -->
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="w-full md:w-1/3">
+                    <input type="text" id="searchInput" onkeyup="filterApplications()" placeholder="আবেদন নং, নাম বা মোবাইল দিয়ে খুঁজুন..." class="w-full px-3 py-2 border rounded text-sm">
+                </div>
+                <div class="text-sm text-gray-600 font-medium">
+                    মোট আবেদন: <span id="totalCount" class="font-bold text-custom-green">০</span> টি
+                </div>
+            </div>
+
+            <!-- APPLICATIONS TABLE -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-100 text-gray-700 uppercase text-xs border-b">
+                            <tr>
+                                <th class="p-3">আবেদন নং</th>
+                                <th class="p-3">আবেদনকারী ও মোবাইল</th>
+                                <th class="p-3">বিষয়</th>
+                                <th class="p-3">বর্তমান অবস্থান</th>
+                                <th class="p-3">স্ট্যাটাস</th>
+                                <th class="p-3">সর্বশেষ আপডেট</th>
+                                <th class="p-3 text-center">অ্যাকশন / ফরোয়ার্ড</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FORWARD MODAL -->
+        <div id="forwardModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 border-b pb-2">আবেদন ফরোয়ার্ড করুন</h3>
+                <input type="hidden" id="modalAppId">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">যার কাছে পাঠাতে চান (Forward To) *</label>
+                    <select id="forwardTarget" class="w-full px-3 py-2 border rounded text-sm">
+                        <optgroup label="অফিস সহকারী ও সংশ্লিষ্ট কর্মকর্তা">
+                            <option value="oa_arman">আরমান (অফিস সহকারী)</option>
+                            <option value="oa_saddam">সাদ্দাম (অফিস সহকারী)</option>
+                            <option value="oa_sharif">শরীফ (অফিস সহকারী)</option>
+                            <option value="oa_surveyor">সার্ভেয়ার</option>
+                        </optgroup>
+                        <optgroup label="ইউনিয়ন ভূমি সহকারী কর্মকর্তাবৃন্দ">
+                            <option value="ulao_krishnanagar">কৃষ্ণনগর ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_protapgonj">প্রতাপগঞ্জ ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_doriadaulat">দরিয়াদৌলত ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_manikpur">মানিকপুর ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_sonarampur">সোনারামপুর ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_saifullakandi">ছয়ফুল্লাকান্দি ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_bishnurampur">বিষ্ণুরামপুর ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_salimabad">ছলিমাবাদ ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_rupsudi">রূপসদী ইউনিয়ন ভূমি অফিস</option>
+                            <option value="ulao_dorikandi">দরিকান্দি ইউনিয়ন ভূমি অফিস</option>
+                        </optgroup>
+                        <optgroup label="উপজেলা ভূমি অফিস">
+                            <option value="ac_land">সহকারী কমিশনার (ভূমি)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">স্ট্যাটাস পরিবর্তন</label>
+                    <select id="forwardStatus" class="w-full px-3 py-2 border rounded text-sm">
+                        <option value="প্রসেসিংয়ে আছে">প্রসেসিংয়ে আছে</option>
+                        <option value="ইউনিয়নে তদন্তাধীন">ইউনিয়নে তদন্তাধীন</option>
+                        <option value="প্রতিবেদন প্রাপ্ত">প্রতিবেদন প্রাপ্ত</option>
+                        <option value="নিষ্পত্তি">নিষ্পত্তি</option>
+                        <option value="খারিজ">খারিজ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">আদেশ / নির্দেশনা / প্রতিবেদন নোট</label>
+                    <textarea id="forwardNote" rows="3" placeholder="যেমন: সরেজমিনে তদন্তপূর্বক প্রতিবেদন দিন..." class="w-full px-3 py-2 border rounded text-sm"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 space-x-reverse">
+                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm">বাতিল</button>
+                    <button onclick="submitForward()" class="px-4 py-2 bg-emerald-700 text-white rounded text-sm">প্রেরণ করুন</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY MODAL -->
+        <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg max-w-lg w-full p-6 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 border-b pb-2">আবেদনের গতিপথ (Movement History)</h3>
+                <div id="historyList" class="space-y-3 max-h-80 overflow-y-auto text-sm"></div>
+                <div class="text-right">
+                    <button onclick="closeHistoryModal()" class="px-4 py-2 bg-gray-500 text-white rounded text-sm">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-center py-3 text-xs">
+        উপজেলা ভূমি অফিস ট্র্যাকিং সিস্টেম &copy; ২০২৬
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        // =============================================================
+        // আপনার দেয়া আসল ফায়ারবেজ কনফিগারেশন যুক্ত করা হয়েছে
+        // =============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAk3g6BExbKirRokms9ZB3Js7TgCUSJbOI",
+            authDomain: "tracker-21b81.firebaseapp.com",
+            projectId: "tracker-21b81",
+            storageBucket: "tracker-21b81.firebasestorage.app",
+            messagingSenderId: "105030361347",
+            appId: "1:105030361347:web:03c3c8392c9f6c9147c936",
+            measurementId: "G-QY4S3ZW949"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // =============================================================
+        // ইউজার ও অ্যাসাইনি তথ্য (CREDENTIALS)
+        // =============================================================
+        const USERS = {
+            "operator":     { pass: "123456", name: "ডাটা এন্ট্রি অপারেটর", role: "operator", id: "operator" },
+            "acland":       { pass: "123456", name: "সহকারী কমিশনার (ভূমি)", role: "ac_land", id: "ac_land" },
+
+            "arman":        { pass: "123456", name: "আরমান (অফিস সহকারী)", role: "assistant", id: "oa_arman" },
+            "saddam":       { pass: "123456", name: "সাদ্দাম (অফিস সহকারী)", role: "assistant", id: "oa_saddam" },
+            "sharif":       { pass: "123456", name: "শরীফ (অফিস সহকারী)", role: "assistant", id: "oa_sharif" },
+            "surveyor":     { pass: "123456", name: "সার্ভেয়ার", role: "assistant", id: "oa_surveyor" },
+
+            "krishnanagar":  { pass: "123456", name: "কৃষ্ণনগর ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_krishnanagar" },
+            "protapgonj":   { pass: "123456", name: "প্রতাপগঞ্জ ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_protapgonj" },
+            "doriadaulat":   { pass: "123456", name: "দরিয়াদৌলত ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_doriadaulat" },
+            "manikpur":     { pass: "123456", name: "মানিকপুর ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_manikpur" },
+            "sonarampur":   { pass: "123456", name: "সোনারামপুর ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_sonarampur" },
+            "saifullakandi": { pass: "123456", name: "ছয়ফুল্লাকান্দি ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_saifullakandi" },
+            "bishnurampur":  { pass: "123456", name: "বিষ্ণুরামপুর ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_bishnurampur" },
+            "salimabad":    { pass: "123456", name: "ছলিমাবাদ ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_salimabad" },
+            "rupsudi":      { pass: "123456", name: "রূপসদী ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_rupsudi" },
+            "dorikandi":    { pass: "123456", name: "দরিকান্দি ইউনিয়ন ভূমি অফিস", role: "ulao", id: "ulao_dorikandi" }
+        };
+
+        const ASSIGNEE_NAMES = {
+            "operator": "ডাটা এন্ট্রি অপারেটর",
+            "ac_land": "সহকারী কমিশনার (ভূমি)",
+            
+            "oa_arman": "আরমান (অফিস সহকারী)",
+            "oa_saddam": "সাদ্দাম (অফিস সহকারী)",
+            "oa_sharif": "শরীফ (অফিস সহকারী)",
+            "oa_surveyor": "সার্ভেয়ার",
+
+            "ulao_krishnanagar": "কৃষ্ণনগর ইউনিয়ন ভূমি অফিস",
+            "ulao_protapgonj": "প্রতাপগঞ্জ ইউনিয়ন ভূমি অফিস",
+            "ulao_doriadaulat": "দরিয়াদৌলত ইউনিয়ন ভূমি অফিস",
+            "ulao_manikpur": "মানিকপুর ইউনিয়ন ভূমি অফিস",
+            "ulao_sonarampur": "সোনারামপুর ইউনিয়ন ভূমি অফিস",
+            "ulao_saifullakandi": "ছয়ফুল্লাকান্দি ইউনিয়ন ভূমি অফিস",
+            "ulao_bishnurampur": "বিষ্ণুরামপুর ইউনিয়ন ভূমি অফিস",
+            "ulao_salimabad": "ছলিমাবাদ ইউনিয়ন ভূমি অফিস",
+            "ulao_rupsudi": "রূপসদী ইউনিয়ন ভূমি অফিস",
+            "ulao_dorikandi": "দরিকান্দি ইউনিয়ন ভূমি অফিস"
+        };
+
+        let currentUser = null;
+        let allApplications = [];
+
+        // Check Local Storage Session
+        window.onload = function() {
+            const savedUser = localStorage.getItem('tracker_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+        };
+
+        // Login Logic
+        function login(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const passInput = document.getElementById('loginPassword').value.trim();
+            const err = document.getElementById('loginError');
+
+            if (USERS[idInput] && USERS[idInput].pass === passInput) {
+                currentUser = USERS[idInput];
+                localStorage.setItem('tracker_user', JSON.stringify(currentUser));
+                err.classList.add('hidden');
+                showDashboard();
+            } else {
+                err.innerText = "ভুল ইউজার আইডি অথবা পাসওয়ার্ড!";
+                err.classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('userRoleBadge').innerText = currentUser.role.toUpperCase();
+
+            if (currentUser.role === 'operator') {
+                document.getElementById('operatorFormCard').classList.remove('hidden');
+            } else {
+                document.getElementById('operatorFormCard').classList.add('hidden');
+            }
+
+            listenApplications();
+        }
+
+        function logout() {
+            localStorage.removeItem('tracker_user');
+            currentUser = null;
+            location.reload();
+        }
+
+        // New Application
+        function createApplication(e) {
+            e.preventDefault();
+            const appNo = document.getElementById('appNo').value;
+            const applicant = document.getElementById('applicant').value;
+            const mobile = document.getElementById('mobile').value;
+            const subject = document.getElementById('subject').value;
+            const targetAssistant = document.getElementById('initialAssistant').value;
+
+            const newApp = {
+                appNo, applicant, mobile, subject,
+                currentAssignee: targetAssistant,
+                status: "প্রসেসিংয়ে আছে",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                history: [{
+                    from: "ডাটা এন্ট্রি অপারেটর",
+                    to: ASSIGNEE_NAMES[targetAssistant],
+                    note: "নতুন আবেদন এন্ট্রি ও ফরোয়ার্ড করা হয়েছে।",
+                    date: new Date().toLocaleString('bn-BD')
+                }]
+            };
+
+            db.collection('applications').add(newApp).then(() => {
+                alert('আবেদনটি সফলভাবে যুক্ত হয়েছে!');
+                document.getElementById('newAppForm').reset();
+            }).catch(err => alert('এরর: ' + err.message));
+        }
+
+        // Firestore Listener
+        function listenApplications() {
+            db.collection('applications').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                allApplications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTable(allApplications);
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('appTableBody');
+            tbody.innerHTML = '';
+
+            let count = 0;
+            data.forEach(app => {
+                const isMyFile = app.currentAssignee === currentUser.id;
+                const canView = (currentUser.role === 'ac_land') || (currentUser.role === 'operator') || isMyFile;
+
+                if (!canView) return;
+                count++;
+
+                const tr = document.createElement('tr');
+                tr.className = isMyFile ? "bg-amber-50 font-medium" : "hover:bg-gray-50";
+
+                const historyBtn = `<button onclick="showHistory('${app.id}')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">গতিপথ</button>`;
+                const forwardBtn = isMyFile ? `<button onclick="openForwardModal('${app.id}')" class="text-xs bg-emerald-700 text-white px-2 py-1 rounded hover:bg-emerald-800 ml-1">ফরোয়ার্ড</button>` : '';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-gray-800">${app.appNo}</td>
+                    <td class="p-3">${app.applicant}<br><span class="text-xs text-gray-500">📞 ${app.mobile}</span></td>
+                    <td class="p-3">${app.subject}</td>
+                    <td class="p-3"><span class="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded font-semibold">${ASSIGNEE_NAMES[app.currentAssignee] || app.currentAssignee}</span></td>
+                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">${app.status}</span></td>
+                    <td class="p-3 text-xs">${app.history && app.history.length > 0 ? app.history[app.history.length - 1].date : '-'}</td>
+                    <td class="p-3 text-center">${historyBtn} ${forwardBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalCount').innerText = count;
+        }
+
+        function filterApplications() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allApplications.filter(app => 
+                app.appNo.toLowerCase().includes(q) ||
+                app.applicant.toLowerCase().includes(q) ||
+                app.mobile.toLowerCase().includes(q)
+            );
+            renderTable(filtered);
+        }
+
+        function openForwardModal(appId) {
+            document.getElementById('modalAppId').value = appId;
+            document.getElementById('forwardModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('forwardModal').classList.add('hidden');
+        }
+
+        function submitForward() {
+            const appId = document.getElementById('modalAppId').value;
+            const target = document.getElementById('forwardTarget').value;
+            const status = document.getElementById('forwardStatus').value;
+            const note = document.getElementById('forwardNote').value;
+
+            const app = allApplications.find(a => a.id === appId);
+            if (!app) return;
+
+            const historyEntry = {
+                from: currentUser.name,
+                to: ASSIGNEE_NAMES[target],
+                note: note || "কোনো নোট নেই",
+                date: new Date().toLocaleString('bn-BD')
+            };
+
+            db.collection('applications').doc(appId).update({
+                currentAssignee: target,
+                status: status,
+                history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
+            }).then(() => {
+                alert('আবেদনটি ফরোয়ার্ড করা হয়েছে!');
+                closeModal();
+                document.getElementById('forwardNote').value = '';
+            });
+        }
+
+        function showHistory(appId) {
+            const app = allApplications.find(a => a.id === appId);
+            if (!app) return;
+
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+
+            (app.history || []).forEach((h, index) => {
+                const item = document.createElement('div');
+                item.className = "p-3 bg-gray-50 border-l-4 border-emerald-600 rounded text-xs space-y-1";
+                item.innerHTML = `
+                    <div class="flex justify-between font-bold text-gray-700">
+                        <span>${index + 1}. ${h.from} ➔ ${h.to}</span>
+                        <span class="text-gray-400 font-normal">${h.date}</span>
+                    </div>
+                    <p class="text-gray-600">মন্তব্য: <span class="italic text-gray-800">${h.note}</span></p>
+                `;
+                list.appendChild(item);
+            });
+
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
