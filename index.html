@@ -63,7 +63,7 @@
         <!-- DASHBOARD SECTION -->
         <div id="dashboardSection" class="hidden space-y-6">
 
-            <!-- AC LAND EXECUTIVE SUMMARY CARDS (Feature 1 & 3) -->
+            <!-- AC LAND EXECUTIVE SUMMARY CARDS -->
             <div id="acLandSummaryCards" class="hidden grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-600 flex justify-between items-center">
                     <div>
@@ -157,7 +157,7 @@
                 </form>
             </div>
 
-            <!-- SEARCH & ADVANCED FILTERS (Feature 3) -->
+            <!-- SEARCH & ADVANCED FILTERS -->
             <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="w-full md:w-1/2 flex gap-2">
                     <input type="text" id="searchInput" onkeyup="filterApplications()" placeholder="আবেদন নং, নাম, বিষয় বা মোবাইল দিয়ে খুঁজুন..." class="w-full px-3 py-2 border rounded text-sm">
@@ -208,6 +208,60 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- EDIT APPLICATION MODAL (AC LAND SPECIAL) -->
+        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg max-w-xl w-full p-6 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 border-b pb-2">আবেদনের তথ্য সংশোধন করুন (AC Land Power)</h3>
+                <input type="hidden" id="editAppId">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদন নং</label>
+                        <input type="text" id="editAppNo" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">আবেদনকারীর নাম</label>
+                        <input type="text" id="editApplicant" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">মোবাইল নম্বর</label>
+                        <input type="text" id="editMobile" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ক্যাটাগরি</label>
+                        <select id="editCategory" class="w-full px-3 py-2 border rounded text-sm">
+                            <option value="অভিযোগ">অভিযোগ</option>
+                            <option value="ডিসি অফিসের চিঠি">ডিসি অফিসের চিঠি</option>
+                            <option value="এস এফ">এস এফ</option>
+                            <option value="পিটিশন মামলা">পিটিশন মামলা</option>
+                            <option value="সিআর মামলা">সিআর মামলা</option>
+                            <option value="আবেদন">আবেদন</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">বিষয় ( বিস্তারিত)</label>
+                        <input type="text" id="editSubject" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">জরুরি ফ্ল্যাগ</label>
+                        <select id="editPriority" class="w-full px-3 py-2 border rounded text-sm">
+                            <option value="false">সাধারণ</option>
+                            <option value="true">🚨 জরুরি (High Priority)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">মেয়াদ বাড়ান/কমান (নতুন শেষ তারিখ)</label>
+                        <input type="date" id="editDueDate" class="w-full px-3 py-2 border rounded text-sm">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 space-x-reverse pt-3 border-t">
+                    <button onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm">বাতিল</button>
+                    <button onclick="saveApplicationEdits()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-semibold">সংরক্ষণ করুন</button>
+                </div>
+            </div>
         </div>
 
         <!-- FORWARD MODAL FOR ASSISTANTS / USERS -->
@@ -437,7 +491,6 @@
             const isPriority = document.getElementById('isPriority').checked;
             const targetDays = parseInt(document.getElementById('targetDays').value) || 7;
 
-            // Target date calculation
             const dueDate = new Date();
             dueDate.setDate(dueDate.getDate() + targetDays);
 
@@ -507,7 +560,6 @@
             let count = 0;
             const now = new Date();
 
-            // Sort: Priority files first
             const sortedData = [...data].sort((a, b) => (b.isPriority === true ? 1 : 0) - (a.isPriority === true ? 1 : 0));
 
             sortedData.forEach(app => {
@@ -522,15 +574,11 @@
                 count++;
 
                 const tr = document.createElement('tr');
-                
-                // Priority Styling
                 let rowClasses = app.isPriority ? "priority-row font-medium" : (isMyFile ? "bg-amber-50 font-medium" : "hover:bg-gray-50");
                 tr.className = rowClasses;
 
-                // Priority Badge
                 const priorityBadge = app.isPriority ? `<span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ml-1">🚨 জরুরি</span>` : '';
 
-                // Overdue Check
                 let dueHtml = '-';
                 if (app.dueDate && app.status !== 'নিষ্পত্তি' && app.status !== 'খারিজ') {
                     const dDate = new Date(app.dueDate);
@@ -545,6 +593,9 @@
                 const historyBtn = `<button onclick="showHistory('${app.id}')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">গতিপথ</button>`;
                 const forwardBtn = isMyFile ? `<button onclick="openForwardModal('${app.id}', false)" class="text-xs bg-emerald-700 text-white px-2 py-1 rounded hover:bg-emerald-800 ml-1">ফরোয়ার্ড</button>` : '';
                 const stepBackBtn = isAcLand ? `<button onclick="openForwardModal('${app.id}', true)" class="text-xs bg-amber-600 text-white px-2 py-1 rounded hover:bg-amber-700 ml-1">↩️ ব্যাক</button>` : '';
+                
+                // AC LAND SPECIAL EDIT BUTTON
+                const editBtn = isAcLand ? `<button onclick="openEditModal('${app.id}')" class="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 ml-1">✏️ এডিট</button>` : '';
 
                 const categoryBadge = app.category ? `<span class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded font-semibold inline-block mb-1">${app.category}</span><br>` : '';
 
@@ -555,7 +606,7 @@
                     <td class="p-3"><span class="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded font-semibold">${ASSIGNEE_NAMES[app.currentAssignee] || app.currentAssignee}</span></td>
                     <td class="p-3">${dueHtml}</td>
                     <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">${app.status}</span></td>
-                    <td class="p-3 text-center whitespace-nowrap">${historyBtn} ${forwardBtn} ${stepBackBtn}</td>
+                    <td class="p-3 text-center whitespace-nowrap">${historyBtn} ${editBtn} ${forwardBtn} ${stepBackBtn}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -583,6 +634,78 @@
             renderTable(filtered);
         }
 
+        /* AC LAND EDIT FUNCTIONS */
+        function openEditModal(appId) {
+            const app = allApplications.find(a => a.id === appId);
+            if (!app) return;
+
+            document.getElementById('editAppId').value = appId;
+            document.getElementById('editAppNo').value = app.appNo || '';
+            document.getElementById('editApplicant').value = app.applicant || '';
+            document.getElementById('editMobile').value = app.mobile || '';
+            document.getElementById('editCategory').value = app.category || 'অভিযোগ';
+            document.getElementById('editSubject').value = app.subject || '';
+            document.getElementById('editPriority').value = app.isPriority ? "true" : "false";
+
+            if (app.dueDate) {
+                const d = new Date(app.dueDate);
+                const yr = d.getFullYear();
+                const mo = String(d.getMonth() + 1).padStart(2, '0');
+                const da = String(d.getDate()).padStart(2, '0');
+                document.getElementById('editDueDate').value = `${yr}-${mo}-${da}`;
+            }
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function saveApplicationEdits() {
+            const appId = document.getElementById('editAppId').value;
+            const newAppNo = document.getElementById('editAppNo').value.trim();
+            const newApplicant = document.getElementById('editApplicant').value.trim();
+            const newMobile = document.getElementById('editMobile').value.trim();
+            const newCategory = document.getElementById('editCategory').value;
+            const newSubject = document.getElementById('editSubject').value.trim();
+            const isPriority = document.getElementById('editPriority').value === "true";
+            const dueDateVal = document.getElementById('editDueDate').value;
+
+            if (!newAppNo || !newApplicant || !newSubject) {
+                alert('অনুগ্রহ করে আবশ্যক তথ্য প্রদান করুন।');
+                return;
+            }
+
+            let updateObj = {
+                appNo: newAppNo,
+                applicant: newApplicant,
+                mobile: newMobile,
+                category: newCategory,
+                subject: newSubject,
+                isPriority: isPriority
+            };
+
+            if (dueDateVal) {
+                updateObj.dueDate = new Date(dueDateVal).toISOString();
+            }
+
+            const historyEntry = {
+                from: "সহকারী কমিশনার (ভূমি)",
+                to: "সিস্টেম রেকর্ড",
+                note: "আবেদনের মৌলিক তথ্য সংশোধন/এডিট করা হয়েছে।",
+                date: new Date().toLocaleString('bn-BD')
+            };
+
+            updateObj.history = firebase.firestore.FieldValue.arrayUnion(historyEntry);
+
+            db.collection('applications').doc(appId).update(updateObj).then(() => {
+                alert('আবেদনের তথ্য সফলভাবে সংশোধন করা হয়েছে!');
+                closeEditModal();
+            }).catch(err => alert('এরর: ' + err.message));
+        }
+
+        /* FORWARD FUNCTIONS */
         function openForwardModal(appId, isRollback = false) {
             document.getElementById('modalAppId').value = appId;
             document.getElementById('isRollbackMode').value = isRollback;
@@ -659,7 +782,6 @@
             const app = allApplications.find(a => a.id === appId);
             if (!app) return;
 
-            // MULTI FORWARD TO ULAO
             if (isMultiForwardMode && currentUser.role === 'assistant') {
                 const selectedAssignees = Array.from(document.querySelectorAll('input[name="forwardAssignees"]:checked')).map(cb => cb.value);
 
@@ -705,7 +827,6 @@
                 });
 
             } else {
-                // NORMAL SINGLE FORWARD
                 const target = document.getElementById('forwardTarget').value;
                 const actionLabel = isRollback ? "↩️ [স্টেপ ব্যাক করা হয়েছে]" : "";
                 
